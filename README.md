@@ -1,2 +1,2 @@
 # HovrinoFacilitySite
-Build for project HovrinoFacility.
+A site built for the HovrinoFacility project, vibe-coded for rapid deployment.
