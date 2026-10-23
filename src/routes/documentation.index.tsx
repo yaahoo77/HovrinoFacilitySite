@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { ArchiveGate } from "@/components/ArchiveGate";
 import { useLang } from "@/lib/i18n";
@@ -14,6 +14,16 @@ export const Route = createFileRoute("/documentation/")({
 });
 
 function DocIndex() {
+  const [ringing, setRinging] = useState(false);
+  const sent = useRef(false);
+  useEffect(() => {
+    if (sent.current) return;
+    sent.current = true;
+    fetch("/phonegame/documentation.php", { method: "POST" })
+      .then((r) => r.json())
+      .then((d) => setRinging(d?.status === "planned"))
+      .catch(() => {});
+  }, []);
   const { t } = useLang();
   const T = (ru: string, en: string) => t({ ru, en });
   const { unlocked, tryUnlock, lock } = useArchive();
@@ -24,6 +34,7 @@ function DocIndex() {
   return (
     <Layout crumb={UI.documentation} contentClassName="documentation">
       <h1>{T("Документация", "Documentation")}</h1>
+      {ringing && <p className="meta">☎ Your phone will ring soon.</p>}
       <p>{T("Раздел содержит отчёты учреждения и материалы архива исторических документов.", "This section contains institutional reports and materials from the historical records archive.")}</p>
       {!unlocked && <ArchiveGate onTry={tryUnlock} />}
       {unlocked && <p className="meta">{T("Доступ к архиву открыт на время сеанса.", "Archive access granted for this session.")} <a href="#" onClick={(e) => { e.preventDefault(); lock(); }}>{T("Выйти", "Log out")}</a></p>}
