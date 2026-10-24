@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
 import { ArchiveGate } from "@/components/ArchiveGate";
@@ -24,6 +24,15 @@ export function DocView({ slug, goto }: { slug: string; goto: boolean }) {
     try { setDocUnlocked(sessionStorage.getItem(docKey) === "1"); } catch { /* ignore */ }
   }, [docKey]);
   const doc = DOCS.find((d) => d.slug === slug);
+  // Phone game: once X07 part 2 is open at /unlocked, the server plans the ending call (once, and only
+  // after the /documentation call; otherwise it does nothing).
+  const isOpen = !!doc && (doc.public || unlocked) && (!doc.password || docUnlocked);
+  const rang = useRef(false);
+  useEffect(() => {
+    if (goto || !isOpen || slug !== "x07-research-part-2" || rang.current) return;
+    rang.current = true;
+    fetch("/phonegame/ending.php", { method: "POST" }).catch(() => {});
+  }, [goto, isOpen, slug]);
   if (!doc) throw notFound();
   const gotoUnlocked = () => {
     if (goto) navigate({ to: "/documentation/$slug/unlocked", params: { slug } });
