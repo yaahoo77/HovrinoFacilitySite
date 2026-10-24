@@ -10,7 +10,6 @@ const NAV = [
   { to: "/departments", k: "departments" },
   { to: "/specialists", k: "specialists" },
   { to: "/patients", k: "patients" },
-  { to: "/documentation", k: "documentation" },
   { to: "/contacts", k: "contacts" },
 ] as const satisfies readonly { to: string; k: keyof typeof UI }[];
 
