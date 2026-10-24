@@ -26,7 +26,7 @@ export function DocView({ slug, goto }: { slug: string; goto: boolean }) {
   const doc = DOCS.find((d) => d.slug === slug);
   if (!doc) throw notFound();
   const gotoUnlocked = () => {
-    if (goto) navigate({ to: "/documentation/$slug_/unlocked", params: { slug } });
+    if (goto) navigate({ to: "/documentation/$slug/unlocked", params: { slug } });
   };
   const renderText = (text: string) => doc.corrupted === false ? text : corruptText(text);
   const back = <Link to="/documentation">{t(UI.back)}</Link>;
