@@ -18,6 +18,7 @@ import { Route as PatientsRouteImport } from './routes/patients'
 import { Route as SpecialistsRouteImport } from './routes/specialists'
 import { Route as DocumentationIndexRouteImport } from './routes/documentation.index'
 import { Route as DocumentationSlugRouteImport } from './routes/documentation.$slug'
+import { Route as DocumentationSlugUnlockedRouteImport } from './routes/documentation.$slug_.unlocked'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,12 @@ const DocumentationSlugRoute = DocumentationSlugRouteImport.update({
   path: '/documentation/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocumentationSlugUnlockedRoute =
+  DocumentationSlugUnlockedRouteImport.update({
+    id: '/documentation/$slug_/unlocked',
+    path: '/documentation/$slug/unlocked',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
   '/documentation/': typeof DocumentationIndexRoute
+  '/documentation/$slug/unlocked': typeof DocumentationSlugUnlockedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesByTo {
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
   '/documentation': typeof DocumentationIndexRoute
+  '/documentation/$slug/unlocked': typeof DocumentationSlugUnlockedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +107,7 @@ export interface FileRoutesById {
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
   '/documentation/': typeof DocumentationIndexRoute
+  '/documentation/$slug_/unlocked': typeof DocumentationSlugUnlockedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/specialists'
     | '/documentation/$slug'
     | '/documentation/'
+    | '/documentation/$slug/unlocked'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/specialists'
     | '/documentation/$slug'
     | '/documentation'
+    | '/documentation/$slug/unlocked'
   id:
     | '__root__'
     | '/'
@@ -133,6 +145,7 @@ export interface FileRouteTypes {
     | '/specialists'
     | '/documentation/$slug'
     | '/documentation/'
+    | '/documentation/$slug_/unlocked'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +158,7 @@ export interface RootRouteChildren {
   SpecialistsRoute: typeof SpecialistsRoute
   DocumentationSlugRoute: typeof DocumentationSlugRoute
   DocumentationIndexRoute: typeof DocumentationIndexRoute
+  DocumentationSlugUnlockedRoute: typeof DocumentationSlugUnlockedRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocumentationSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/documentation/$slug_/unlocked': {
+      id: '/documentation/$slug_/unlocked'
+      path: '/documentation/$slug/unlocked'
+      fullPath: '/documentation/$slug/unlocked'
+      preLoaderRoute: typeof DocumentationSlugUnlockedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +246,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpecialistsRoute: SpecialistsRoute,
   DocumentationSlugRoute: DocumentationSlugRoute,
   DocumentationIndexRoute: DocumentationIndexRoute,
+  DocumentationSlugUnlockedRoute: DocumentationSlugUnlockedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
