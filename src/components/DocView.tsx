@@ -33,7 +33,8 @@ export function DocView({ slug, goto }: { slug: string; goto: boolean }) {
   if (!doc.public && !unlocked)
     return <Layout crumb={UI.documentation} contentClassName="documentation">{back}<ArchiveGate onTry={(pw) => {
       const ok = tryUnlock(pw);
-      if (ok) gotoUnlocked();
+      // Only switch to /unlocked once the document itself is open (it may still ask for its own code).
+      if (ok && (!doc.password || docUnlocked)) gotoUnlocked();
       return ok;
     }} /></Layout>;
   if (doc.password && !docUnlocked)
