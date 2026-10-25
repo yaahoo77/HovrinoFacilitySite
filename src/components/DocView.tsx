@@ -24,8 +24,6 @@ export function DocView({ slug, goto }: { slug: string; goto: boolean }) {
     try { setDocUnlocked(sessionStorage.getItem(docKey) === "1"); } catch { /* ignore */ }
   }, [docKey]);
   const doc = DOCS.find((d) => d.slug === slug);
-  // Phone game: once X07 part 2 is open at /unlocked, the server plans the ending call (once, and only
-  // after the /documentation call; otherwise it does nothing).
   const isOpen = !!doc && (doc.public || unlocked) && (!doc.password || docUnlocked);
   const rang = useRef(false);
   useEffect(() => {
@@ -42,7 +40,6 @@ export function DocView({ slug, goto }: { slug: string; goto: boolean }) {
   if (!doc.public && !unlocked)
     return <Layout crumb={UI.documentation} contentClassName="documentation">{back}<ArchiveGate onTry={(pw) => {
       const ok = tryUnlock(pw);
-      // Only switch to /unlocked once the document itself is open (it may still ask for its own code).
       if (ok && (!doc.password || docUnlocked)) gotoUnlocked();
       return ok;
     }} /></Layout>;
