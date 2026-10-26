@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as CamerasRouteImport } from './routes/cameras'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as DepartmentsRouteImport } from './routes/departments'
+import { Route as PatientCardRouteImport } from './routes/patient-card'
 import { Route as PatientsRouteImport } from './routes/patients'
 import { Route as SpecialistsRouteImport } from './routes/specialists'
 import { Route as DocumentationIndexRouteImport } from './routes/documentation.index'
@@ -43,6 +44,11 @@ const ContactsRoute = ContactsRouteImport.update({
 const DepartmentsRoute = DepartmentsRouteImport.update({
   id: '/departments',
   path: '/departments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientCardRoute = PatientCardRouteImport.update({
+  id: '/patient-card',
+  path: '/patient-card',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatientsRoute = PatientsRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/cameras': typeof CamerasRoute
   '/contacts': typeof ContactsRoute
   '/departments': typeof DepartmentsRoute
+  '/patient-card': typeof PatientCardRoute
   '/patients': typeof PatientsRoute
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/cameras': typeof CamerasRoute
   '/contacts': typeof ContactsRoute
   '/departments': typeof DepartmentsRoute
+  '/patient-card': typeof PatientCardRoute
   '/patients': typeof PatientsRoute
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/cameras': typeof CamerasRoute
   '/contacts': typeof ContactsRoute
   '/departments': typeof DepartmentsRoute
+  '/patient-card': typeof PatientCardRoute
   '/patients': typeof PatientsRoute
   '/specialists': typeof SpecialistsRoute
   '/documentation/$slug': typeof DocumentationSlugRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/cameras'
     | '/contacts'
     | '/departments'
+    | '/patient-card'
     | '/patients'
     | '/specialists'
     | '/documentation/$slug'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/cameras'
     | '/contacts'
     | '/departments'
+    | '/patient-card'
     | '/patients'
     | '/specialists'
     | '/documentation/$slug'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/cameras'
     | '/contacts'
     | '/departments'
+    | '/patient-card'
     | '/patients'
     | '/specialists'
     | '/documentation/$slug'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   CamerasRoute: typeof CamerasRoute
   ContactsRoute: typeof ContactsRoute
   DepartmentsRoute: typeof DepartmentsRoute
+  PatientCardRoute: typeof PatientCardRoute
   PatientsRoute: typeof PatientsRoute
   SpecialistsRoute: typeof SpecialistsRoute
   DocumentationSlugRoute: typeof DocumentationSlugRoute
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/departments'
       fullPath: '/departments'
       preLoaderRoute: typeof DepartmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient-card': {
+      id: '/patient-card'
+      path: '/patient-card'
+      fullPath: '/patient-card'
+      preLoaderRoute: typeof PatientCardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/patients': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   CamerasRoute: CamerasRoute,
   ContactsRoute: ContactsRoute,
   DepartmentsRoute: DepartmentsRoute,
+  PatientCardRoute: PatientCardRoute,
   PatientsRoute: PatientsRoute,
   SpecialistsRoute: SpecialistsRoute,
   DocumentationSlugRoute: DocumentationSlugRoute,

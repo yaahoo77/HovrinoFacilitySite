@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "@/lib/i18n";
+import { PatientWatch } from "@/components/PatientWatch";
 
 function NotFoundComponent() {
   return (
@@ -88,6 +89,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LangProvider>
+        <PatientWatch />
         <Outlet />
       </LangProvider>
     </QueryClientProvider>
