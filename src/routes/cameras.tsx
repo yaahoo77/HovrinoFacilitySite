@@ -24,6 +24,9 @@ const CAMS = [
   { id: "06", ru: "Архив, подвал", en: "Archive, basement", state: "none" },
 ] as const;
 
+const STATIC_VIDEO = "/media/no-signal.mp4";
+const STATIC_WEBM = "/media/no-signal.webm";
+
 function Clock({ frozen }: { frozen?: boolean }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -42,13 +45,14 @@ function Cameras() {
   const { t } = useLang();
   const T = (ru: string, en: string) => t({ ru, en });
   const { unlocked } = useArchive();
-  const [downloading, setDownloading] = useState(false);
-  const [downloadError, setDownloadError] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [sound, setSound] = useState<string | null>(null);
 
-  const downloadRecording = async (url: string) => {
+  const downloadRecording = async (id: string, url: string, filename: string) => {
     if (downloading) return;
-    setDownloading(true);
-    setDownloadError(false);
+    setDownloading(id);
+    setDownloadError(null);
     let objectUrl: string | undefined;
     try {
       const response = await fetch(url);
@@ -56,18 +60,18 @@ function Cameras() {
       objectUrl = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = objectUrl;
-      link.download = "CAM-05-ward14.wav";
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch {
-      setDownloadError(true);
+      setDownloadError(id);
     } finally {
       if (objectUrl) {
         const urlToRevoke = objectUrl;
         window.setTimeout(() => URL.revokeObjectURL(urlToRevoke), 1000);
       }
-      setDownloading(false);
+      setDownloading(null);
     }
   };
 
@@ -89,7 +93,13 @@ function Cameras() {
           <div className="cams">
             {CAMS.map((c) => (
               <div key={c.id} className="cam">
-                <div className={`cam-view ${c.state}`}>
+                <div className={`cam-view ${c.state}`} onClick={c.state === "none" ? () => setSound(sound === c.id ? null : c.id) : undefined}>
+                  {c.state === "none" && (
+                    <video className="cam-static" autoPlay loop playsInline muted={sound !== c.id} preload="auto">
+                      <source src={STATIC_WEBM} type="video/webm" />
+                      <source src={STATIC_VIDEO} type="video/mp4" />
+                    </video>
+                  )}
                   {c.state === "none" && <span>{T("НЕТ ИЗОБРАЖЕНИЯ", "NO VIDEO")}</span>}
                   <div className="cam-osd">CAM {c.id} · <Clock frozen={c.state === "frozen"} /></div>
                 </div>
@@ -100,13 +110,24 @@ function Cameras() {
                     <audio controls preload="none" src={c.audio} style={{ width: "100%" }} />
                   </div>
                 )}
-                <div className="meta mt-1">
-                  {"audio" in c && c.audio ? <>
-                    <a href={c.audio} download="CAM-05-ward14.wav" aria-disabled={downloading} onClick={(e) => { e.preventDefault(); void downloadRecording(c.audio); }}>
-                      {downloading ? T("Загрузка…", "Downloading…") : T("Скачать запись", "Download recording")}
+                {c.state === "none" && (
+                  <div className="meta" style={{ marginTop: 4 }}>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setSound(sound === c.id ? null : c.id); }}>
+                      {sound === c.id ? T("Звук: вкл.", "Sound: on") : T("Звук: выкл.", "Sound: off")}
                     </a>
-                    {downloadError && <p className="err" role="alert">{T("Не удалось скачать запись. Повторите попытку.", "Download failed. Please try again.")}</p>}
-                  </> : <span>{T("Скачать запись: недоступно", "Download recording: unavailable")}</span>}
+                  </div>
+                )}
+                <div className="meta mt-1">
+                  {(() => {
+                    const file = "audio" in c && c.audio ? { url: c.audio, name: "CAM-05-ward14.wav" } : c.state === "none" ? { url: STATIC_VIDEO, name: `CAM-${c.id}-no-signal.mp4` } : null;
+                    if (!file) return <span>{T("Скачать запись: недоступно", "Download recording: unavailable")}</span>;
+                    return <>
+                      <a href={file.url} download={file.name} aria-disabled={downloading === c.id} onClick={(e) => { e.preventDefault(); void downloadRecording(c.id, file.url, file.name); }}>
+                        {downloading === c.id ? T("Загрузка…", "Downloading…") : T("Скачать запись", "Download recording")}
+                      </a>
+                      {downloadError === c.id && <p className="err" role="alert">{T("Не удалось скачать запись. Повторите попытку.", "Download failed. Please try again.")}</p>}
+                    </>;
+                  })()}
                 </div>
               </div>
             ))}
