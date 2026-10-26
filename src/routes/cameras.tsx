@@ -93,8 +93,8 @@ function Cameras() {
           <div className="cams">
             {CAMS.map((c) => (
               <div key={c.id} className="cam">
-                <div className={`cam-view ${c.state}`} onClick={c.state === "none" ? () => setSound(sound === c.id ? null : c.id) : undefined}>
-                  {c.state === "none" && (
+                <div className={`cam-view ${c.state}`} onClick={c.state !== "frozen" ? () => setSound(sound === c.id ? null : c.id) : undefined}>
+                  {c.state !== "frozen" && (
                     <video className="cam-static" autoPlay loop playsInline muted={sound !== c.id} preload="auto">
                       <source src={STATIC_WEBM} type="video/webm" />
                       <source src={STATIC_VIDEO} type="video/mp4" />
@@ -110,7 +110,7 @@ function Cameras() {
                     <audio controls preload="none" src={c.audio} style={{ width: "100%" }} />
                   </div>
                 )}
-                {c.state === "none" && (
+                {c.state !== "frozen" && (
                   <div className="meta" style={{ marginTop: 4 }}>
                     <a href="#" onClick={(e) => { e.preventDefault(); setSound(sound === c.id ? null : c.id); }}>
                       {sound === c.id ? T("Звук: вкл.", "Sound: on") : T("Звук: выкл.", "Sound: off")}
@@ -119,7 +119,7 @@ function Cameras() {
                 )}
                 <div className="meta mt-1">
                   {(() => {
-                    const file = "audio" in c && c.audio ? { url: c.audio, name: "CAM-05-ward14.wav" } : c.state === "none" ? { url: STATIC_VIDEO, name: `CAM-${c.id}-no-signal.mp4` } : null;
+                    const file = "audio" in c && c.audio ? { url: c.audio, name: "CAM-05-ward14.wav" } : c.state !== "frozen" ? { url: STATIC_VIDEO, name: `CAM-${c.id}-no-signal.mp4` } : null;
                     if (!file) return <span>{T("Скачать запись: недоступно", "Download recording: unavailable")}</span>;
                     return <>
                       <a href={file.url} download={file.name} aria-disabled={downloading === c.id} onClick={(e) => { e.preventDefault(); void downloadRecording(c.id, file.url, file.name); }}>
